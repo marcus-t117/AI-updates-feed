@@ -6,8 +6,8 @@ const BADGE_COLOURS: Record<Source, string> = {
   claude_blog: 'bg-[#e8684a] text-white',
   github_releases: 'bg-[#4a9eff] text-white',
   hackernews: 'bg-[#ff6600] text-white',
-  x_twitter: 'bg-[#888888] text-white',
-  releasebot: 'bg-[#7c3aed] text-white',
+  x_twitter: 'bg-[#0f9d58] text-white',
+  releasebot: 'bg-[#da552f] text-white',
 }
 
 function relativeTime(iso: string): string {

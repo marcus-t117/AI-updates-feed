@@ -2,13 +2,14 @@ import { XMLParser } from 'fast-xml-parser'
 import { fetchWithTimeout } from '../fetch-with-timeout'
 import { truncateSummary, type RawFeedItem } from '../../types'
 
-// TODO: confirm actual releasebot feed URL before deploying
-const RELEASEBOT_URL = 'https://rsshub.app/telegram/channel/releasebot'
-const parser = new XMLParser({ ignoreAttributes: false })
+// The original rsshub.app/telegram/channel/releasebot returned 403 (@releasebot is a bot, not a channel).
+// Replaced with Product Hunt AI category feed which tracks new AI tool launches.
+const URL = 'https://www.producthunt.com/feed?category=artificial-intelligence'
+const parser = new XMLParser({ ignoreAttributes: false, processEntities: false })
 
 export async function fetchReleasebot(): Promise<RawFeedItem[]> {
   try {
-    const res = await fetchWithTimeout(RELEASEBOT_URL)
+    const res = await fetchWithTimeout(URL)
     if (!res.ok) return []
     const xml = await res.text()
     const parsed = parser.parse(xml)

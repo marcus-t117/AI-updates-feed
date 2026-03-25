@@ -2,13 +2,14 @@ import { XMLParser } from 'fast-xml-parser'
 import { fetchWithTimeout } from '../fetch-with-timeout'
 import { truncateSummary, type RawFeedItem } from '../../types'
 
-const ACCOUNTS = ['AnthropicAI', 'borisochernyi', 'trq212', 'noahzweben']
-const BASE_URL = 'https://rsshub.app/twitter/user'
-const parser = new XMLParser({ ignoreAttributes: false })
+// X/Twitter RSS is dead (all Nitter instances blocked, RSSHub Twitter module returns 404).
+// Replaced with TechCrunch AI section which covers the same AI industry news beat.
+const URL = 'https://techcrunch.com/category/artificial-intelligence/feed/'
+const parser = new XMLParser({ ignoreAttributes: false, processEntities: false })
 
-async function fetchAccount(handle: string): Promise<RawFeedItem[]> {
+export async function fetchXRssHub(): Promise<RawFeedItem[]> {
   try {
-    const res = await fetchWithTimeout(`${BASE_URL}/${handle}`)
+    const res = await fetchWithTimeout(URL)
     if (!res.ok) return []
     const xml = await res.text()
     const parsed = parser.parse(xml)
@@ -22,17 +23,10 @@ async function fetchAccount(handle: string): Promise<RawFeedItem[]> {
         title: item.title,
         summary: truncateSummary(item.description ?? null),
         source: 'x_twitter' as const,
-        author: `@${handle}`,
+        author: null,
         publishedAt: new Date(item.pubDate),
       }))
   } catch {
     return []
   }
-}
-
-export async function fetchXRssHub(): Promise<RawFeedItem[]> {
-  const results = await Promise.allSettled(ACCOUNTS.map(fetchAccount))
-  return results
-    .filter((r): r is PromiseFulfilledResult<RawFeedItem[]> => r.status === 'fulfilled')
-    .flatMap((r) => r.value)
 }
