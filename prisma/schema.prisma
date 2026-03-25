@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model FeedItem {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  url         String   @unique
+  title       String
+  summary     String?
+  source      String
+  author      String?
+  publishedAt DateTime @db.Timestamptz
+  fetchedAt   DateTime @default(now()) @db.Timestamptz
+
+  @@index([publishedAt(sort: Desc)])
+  @@index([source])
+  @@map("feed_items")
+}
