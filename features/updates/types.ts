@@ -41,9 +41,10 @@ export const SOURCE_LABELS: Record<Source, string> = {
 export function stripHtml(html: string | null | undefined): string | null {
   if (!html) return null
   return html
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+    // Decode entities first, then strip tags (order matters)
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/<[^>]*>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim() || null
 }
