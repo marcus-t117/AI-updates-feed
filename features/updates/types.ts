@@ -44,7 +44,8 @@ export function stripHtml(html: string | null | undefined): string | null {
     // Decode entities first, then strip tags (order matters)
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
-    .replace(/<[^>]*>/g, ' ')
+    .replace(/<[^>]*>/g, ' ')   // complete tags
+    .replace(/<[^>]*$/, '')     // partial/truncated tag at end
     .replace(/\s+/g, ' ')
     .trim() || null
 }
