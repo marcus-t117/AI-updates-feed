@@ -1,4 +1,5 @@
 import { fetchAnthropicBlog } from './sources/anthropic-blog'
+import { fetchClaudeBlog } from './sources/claude-blog'
 import { fetchGitHubReleases } from './sources/github-releases'
 import { fetchHackerNews } from './sources/hackernews'
 import { fetchReleasebot } from './sources/releasebot'
@@ -8,6 +9,7 @@ import type { RawFeedItem } from '../types'
 
 const SOURCES = [
   { name: 'anthropic_blog', fn: fetchAnthropicBlog },
+  { name: 'claude_blog', fn: fetchClaudeBlog },
   { name: 'github_releases', fn: fetchGitHubReleases },
   { name: 'hackernews', fn: fetchHackerNews },
   { name: 'releasebot', fn: fetchReleasebot },

@@ -1,5 +1,6 @@
 export type Source =
   | 'anthropic_blog'
+  | 'claude_blog'
   | 'github_releases'
   | 'hackernews'
   | 'x_twitter'
@@ -29,6 +30,7 @@ export interface RawFeedItem {
 
 export const SOURCE_LABELS: Record<Source, string> = {
   anthropic_blog: 'Anthropic',
+  claude_blog: 'Claude Blog',
   github_releases: 'GitHub',
   hackernews: 'HackerNews',
   x_twitter: 'X',

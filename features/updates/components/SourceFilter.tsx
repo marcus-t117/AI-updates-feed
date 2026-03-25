@@ -3,7 +3,7 @@
 import type { Source } from '../types'
 import { SOURCE_LABELS } from '../types'
 
-const ALL_SOURCES: Source[] = ['anthropic_blog', 'github_releases', 'x_twitter', 'hackernews', 'releasebot']
+const ALL_SOURCES: Source[] = ['anthropic_blog', 'claude_blog', 'github_releases', 'x_twitter', 'hackernews', 'releasebot']
 
 export function SourceFilter({
   active,
