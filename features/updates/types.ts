@@ -33,8 +33,8 @@ export const SOURCE_LABELS: Record<Source, string> = {
   claude_blog: 'Claude Blog',
   github_releases: 'GitHub',
   hackernews: 'HackerNews',
-  x_twitter: 'TechCrunch',
-  releasebot: 'Product Hunt',
+  x_twitter: 'X',
+  releasebot: 'Claude Updates',
 }
 
 // Strip HTML tags and decode common entities from feed descriptions

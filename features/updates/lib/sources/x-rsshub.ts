@@ -2,14 +2,19 @@ import { XMLParser } from 'fast-xml-parser'
 import { fetchWithTimeout } from '../fetch-with-timeout'
 import { truncateSummary, type RawFeedItem } from '../../types'
 
-// X/Twitter RSS is dead (all Nitter instances blocked, RSSHub Twitter module returns 404).
-// Replaced with TechCrunch AI section which covers the same AI industry news beat.
-const URL = 'https://techcrunch.com/category/artificial-intelligence/feed/'
+// nitter.net works when a browser User-Agent is provided — without it, returns empty body.
+const NITTER_BASE = 'https://nitter.net'
+const ACCOUNTS = ['AnthropicAI', 'borisochernyi', 'trq212', 'noahzweben']
 const parser = new XMLParser({ ignoreAttributes: false, processEntities: false })
+const BROWSER_UA = 'Mozilla/5.0 (X11; Linux x86_64; rv:115.0) Gecko/20100101 Firefox/115.0'
 
-export async function fetchXRssHub(): Promise<RawFeedItem[]> {
+async function fetchAccount(handle: string): Promise<RawFeedItem[]> {
   try {
-    const res = await fetchWithTimeout(URL)
+    const res = await fetchWithTimeout(
+      `${NITTER_BASE}/${handle}/rss`,
+      10_000,
+      { 'User-Agent': BROWSER_UA }
+    )
     if (!res.ok) return []
     const xml = await res.text()
     const parsed = parser.parse(xml)
@@ -19,14 +24,21 @@ export async function fetchXRssHub(): Promise<RawFeedItem[]> {
     return list
       .filter((item: any) => item.link && item.title && item.pubDate)
       .map((item: any) => ({
-        url: item.link,
+        url: (item.link as string).replace('https://nitter.net', 'https://x.com'),
         title: item.title,
         summary: truncateSummary(item.description ?? null),
         source: 'x_twitter' as const,
-        author: null,
+        author: `@${handle}`,
         publishedAt: new Date(item.pubDate),
       }))
   } catch {
     return []
   }
+}
+
+export async function fetchXRssHub(): Promise<RawFeedItem[]> {
+  const results = await Promise.allSettled(ACCOUNTS.map(fetchAccount))
+  return results
+    .filter((r): r is PromiseFulfilledResult<RawFeedItem[]> => r.status === 'fulfilled')
+    .flatMap((r) => r.value)
 }

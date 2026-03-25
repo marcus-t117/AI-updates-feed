@@ -2,9 +2,9 @@ import { XMLParser } from 'fast-xml-parser'
 import { fetchWithTimeout } from '../fetch-with-timeout'
 import { truncateSummary, type RawFeedItem } from '../../types'
 
-// The original rsshub.app/telegram/channel/releasebot returned 403 (@releasebot is a bot, not a channel).
-// Replaced with Product Hunt AI category feed which tracks new AI tool launches.
-const URL = 'https://www.producthunt.com/feed?category=artificial-intelligence'
+// Claude Code / Claude product-specific news via Google News search.
+// Catches release announcements, changelog posts, and product updates.
+const URL = 'https://news.google.com/rss/search?q=%22Claude+Code%22+OR+%22Claude+AI%22+release+update&hl=en-US&gl=US&ceid=US:en'
 const parser = new XMLParser({ ignoreAttributes: false, processEntities: false })
 
 export async function fetchReleasebot(): Promise<RawFeedItem[]> {
@@ -17,7 +17,12 @@ export async function fetchReleasebot(): Promise<RawFeedItem[]> {
     if (!items) return []
     const list = Array.isArray(items) ? items : [items]
     return list
-      .filter((item: any) => item.link && item.title && item.pubDate)
+      .filter((item: any) => {
+        if (!item.link || !item.title || !item.pubDate) return false
+        // Skip obvious non-product pages (job listings, generic category pages)
+        if (/\b(jobs?|careers?|hiring)\b/i.test(item.title)) return false
+        return true
+      })
       .map((item: any) => ({
         url: item.link,
         title: item.title,
