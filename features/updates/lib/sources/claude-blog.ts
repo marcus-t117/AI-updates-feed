@@ -15,7 +15,12 @@ export async function fetchClaudeBlog(): Promise<RawFeedItem[]> {
     if (!items) return []
     const list = Array.isArray(items) ? items : [items]
     return list
-      .filter((item: any) => item.link && item.title && item.pubDate)
+      .filter((item: any) => {
+        if (!item.link || !item.title || !item.pubDate) return false
+        // Skip category/index pages (e.g. "Enterprise AI Category | Blog - Claude")
+        if (/category/i.test(item.title)) return false
+        return true
+      })
       .map((item: any) => ({
         url: item.link,
         title: item.title,

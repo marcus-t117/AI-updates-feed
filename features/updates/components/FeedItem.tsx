@@ -1,5 +1,5 @@
 import type { FeedItem as FeedItemType, Source } from '../types'
-import { SOURCE_LABELS } from '../types'
+import { SOURCE_LABELS, stripHtml } from '../types'
 
 const BADGE_COLOURS: Record<Source, string> = {
   anthropic_blog: 'bg-[#c8102e] text-white',
@@ -41,7 +41,7 @@ export function FeedItem({ item }: { item: FeedItemType }) {
         {item.title}
       </a>
       {item.summary && (
-        <p className="mt-1 text-sm text-[#7a7a7a] line-clamp-2">{item.summary}</p>
+        <p className="mt-1 text-sm text-[#7a7a7a] line-clamp-2">{stripHtml(item.summary)}</p>
       )}
     </article>
   )

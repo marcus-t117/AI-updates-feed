@@ -17,7 +17,12 @@ export async function fetchAnthropicBlog(): Promise<RawFeedItem[]> {
     if (!items) return []
     const list = Array.isArray(items) ? items : [items]
     return list
-      .filter((item: any) => item.link && item.title && item.pubDate)
+      .filter((item: any) => {
+        if (!item.link || !item.title || !item.pubDate) return false
+        // Skip noise: generic pages like Jobs, Login, Category pages
+        if (/^(jobs|login|careers)\s*[-|]/i.test(item.title)) return false
+        return true
+      })
       .map((item: any) => ({
         url: item.link,
         title: item.title,

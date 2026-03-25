@@ -37,12 +37,23 @@ export const SOURCE_LABELS: Record<Source, string> = {
   releasebot: 'releasebot',
 }
 
+// Strip HTML tags and decode common entities from feed descriptions
+export function stripHtml(html: string | null | undefined): string | null {
+  if (!html) return null
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim() || null
+}
+
 // Truncate at word boundary, max 300 chars. Returns null if input is null/empty.
 export function truncateSummary(text: string | null | undefined): string | null {
-  if (!text) return null
-  const trimmed = text.trim()
-  if (trimmed.length <= 300) return trimmed
-  const cut = trimmed.slice(0, 300)
+  const clean = stripHtml(text)
+  if (!clean) return null
+  if (clean.length <= 300) return clean
+  const cut = clean.slice(0, 300)
   const lastSpace = cut.lastIndexOf(' ')
   return lastSpace > 0 ? cut.slice(0, lastSpace) : cut
 }
