@@ -1,4 +1,5 @@
 import { getLatestItems } from '@/features/updates/lib/db'
+import type { FeedItem } from '@prisma/client'
 
 function escapeXml(str: string): string {
   return str
@@ -14,7 +15,7 @@ export async function GET() {
   const latest50 = items.slice(0, 50)
 
   const itemsXml = latest50
-    .map((item) => `
+    .map((item: FeedItem) => `
     <item>
       <title>${escapeXml(item.title)}</title>
       <link>${escapeXml(item.url)}</link>
