@@ -5,6 +5,7 @@ import { fetchHackerNews } from './sources/hackernews'
 import { fetchReleasebot } from './sources/releasebot'
 import { fetchXRssHub } from './sources/x-rsshub'
 import { insertItems } from './db'
+import { generateSummary } from './ai-summary'
 import type { RawFeedItem } from '../types'
 
 const SOURCES = [
@@ -33,8 +34,17 @@ export async function runSync(): Promise<{
     }
   })
 
-  const inserted = allItems.length > 0 ? await insertItems(allItems) : 0
-  const skipped = allItems.length - inserted
+  // Generate AI summaries in parallel for all fetched items.
+  // generateSummary never throws — failures silently fall back to null.
+  const summarised = await Promise.all(
+    allItems.map(async (item) => ({
+      ...item,
+      summary: await generateSummary(item.title, item.summary),
+    }))
+  )
+
+  const inserted = summarised.length > 0 ? await insertItems(summarised) : 0
+  const skipped = summarised.length - inserted
 
   return { inserted, skipped, errors }
 }

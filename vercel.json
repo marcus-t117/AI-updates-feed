@@ -4,5 +4,9 @@
       "path": "/api/updates/cleanup",
       "schedule": "0 3 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "app/api/updates/sync/route.ts": { "maxDuration": 60 },
+    "app/api/updates/sync-now/route.ts": { "maxDuration": 60 }
+  }
 }

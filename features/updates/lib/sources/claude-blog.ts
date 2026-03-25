@@ -17,8 +17,10 @@ export async function fetchClaudeBlog(): Promise<RawFeedItem[]> {
     return list
       .filter((item: any) => {
         if (!item.link || !item.title || !item.pubDate) return false
-        // Skip category/index pages (e.g. "Enterprise AI Category | Blog - Claude")
-        if (/category/i.test(item.title)) return false
+        // Skip category/tag/archive index pages from Google News results
+        if (/\b(category|categories|tag|archive|page \d)\b/i.test(item.title)) return false
+        // Skip titles that are just "Topic | Blog - Claude" (index page pattern, no article content)
+        if (/^[^|]{1,40}\s*\|\s*Blog\s*[-–]\s*Claude$/i.test(item.title)) return false
         return true
       })
       .map((item: any) => ({
