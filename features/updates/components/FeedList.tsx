@@ -10,6 +10,7 @@ export function FeedList({ initialItems }: { initialItems: FeedItemType[] }) {
   const [items, setItems] = useState<FeedItemType[]>(initialItems)
   const [activeSource, setActiveSource] = useState<Source | null>(null)
   const [pulse, setPulse] = useState(false)
+  const [syncing, setSyncing] = useState(false)
   // useRef so poll reads latest value without restarting the interval on every update
   const lastSeenRef = useRef<string>(new Date().toISOString())
 
@@ -34,6 +35,19 @@ export function FeedList({ initialItems }: { initialItems: FeedItemType[] }) {
     return () => clearInterval(interval)
   }, [poll])
 
+  const syncNow = useCallback(async () => {
+    if (syncing) return
+    setSyncing(true)
+    try {
+      await fetch('/api/updates/sync-now', { method: 'POST' })
+      await poll()
+    } catch {
+      // silently ignore
+    } finally {
+      setSyncing(false)
+    }
+  }, [syncing, poll])
+
   const filtered = activeSource
     ? items.filter((i) => i.source === activeSource)
     : items
@@ -45,6 +59,13 @@ export function FeedList({ initialItems }: { initialItems: FeedItemType[] }) {
           Claude Updates
           <LiveIndicator pulse={pulse} />
         </h1>
+        <button
+          onClick={syncNow}
+          disabled={syncing}
+          className="text-xs px-3 py-1.5 rounded-full border border-[#2e2e2e] text-[#7a7a7a] hover:text-[#f0f0f0] hover:border-[#f0f0f0] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {syncing ? 'Syncing…' : 'Sync now'}
+        </button>
       </div>
       <div className="mb-6">
         <SourceFilter active={activeSource} onChange={setActiveSource} />

@@ -2,8 +2,10 @@ import { XMLParser } from 'fast-xml-parser'
 import { fetchWithTimeout } from '../fetch-with-timeout'
 import { truncateSummary, type RawFeedItem } from '../../types'
 
-const URL = 'https://www.anthropic.com/rss.xml'
-const parser = new XMLParser({ ignoreAttributes: false })
+// Anthropic has no native blog RSS. Using Google News RSS filtered to site:anthropic.com
+// as the best available source for official Anthropic news and blog posts.
+const URL = 'https://news.google.com/rss/search?q=site:anthropic.com&hl=en-US&gl=US&ceid=US:en'
+const parser = new XMLParser({ ignoreAttributes: false, processEntities: false })
 
 export async function fetchAnthropicBlog(): Promise<RawFeedItem[]> {
   try {

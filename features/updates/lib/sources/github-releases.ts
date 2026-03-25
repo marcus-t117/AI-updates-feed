@@ -3,7 +3,8 @@ import { fetchWithTimeout } from '../fetch-with-timeout'
 import { truncateSummary, type RawFeedItem } from '../../types'
 
 const URL = 'https://github.com/anthropics/claude-code/releases.atom'
-const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' })
+// processEntities: false prevents entity expansion limit errors on release notes with heavy HTML
+const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_', processEntities: false })
 
 export async function fetchGitHubReleases(): Promise<RawFeedItem[]> {
   try {
