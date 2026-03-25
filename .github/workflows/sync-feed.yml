@@ -1,0 +1,16 @@
+name: Sync Feed
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger sync
+        run: |
+          curl -sf -X POST https://ai-updates-feed-five.vercel.app/api/updates/sync \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
