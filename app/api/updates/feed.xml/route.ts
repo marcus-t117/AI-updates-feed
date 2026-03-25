@@ -1,4 +1,5 @@
 import { getLatestItems } from '@/features/updates/lib/db'
+import { stripHtml } from '@/features/updates/types'
 import type { FeedItem } from '@prisma/client'
 
 function escapeXml(str: string): string {
@@ -19,7 +20,7 @@ export async function GET() {
     <item>
       <title>${escapeXml(item.title)}</title>
       <link>${escapeXml(item.url)}</link>
-      ${item.summary ? `<description>${escapeXml(item.summary)}</description>` : ''}
+      ${item.summary ? `<description>${escapeXml(stripHtml(item.summary) ?? '')}</description>` : ''}
       <pubDate>${item.publishedAt.toUTCString()}</pubDate>
       <guid isPermaLink="true">${escapeXml(item.url)}</guid>
       ${item.author ? `<author>${escapeXml(item.author)}</author>` : ''}
